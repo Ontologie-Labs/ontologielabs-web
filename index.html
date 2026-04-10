@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ontologie Labs — Structured Intelligence</title>
+  <meta name="description" content="Ontologie Labs is developing structured intelligence for the agentic commerce era — making inventory computable, comparable, and legible to AI agents." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --black:        #060604;
+      --deep:         #0f0a07;
+      --dark-brown:   #1c0e08;
+      --mid-brown:    #2e1508;
+      --copper:       #c4622d;
+      --copper-light: #d4823d;
+      --copper-dim:   #7a3d1c;
+      --copper-faint: #3a1a0a;
+      --cream:        #f5ede0;
+      --cream-dim:    #c8b89a;
+      --cream-muted:  #7a6a58;
+      --parchment:    #ede0d0;
+
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-mono:    'IBM Plex Mono', monospace;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* ── GRID BACKGROUND ────────────────────────────────────── */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(196,98,45,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196,98,45,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+
+    /* ── NAV ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(196,98,45,0.12);
+      background: rgba(6,6,4,0.88);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--copper); }
+
+    .nav-cta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper);
+      text-decoration: none;
+      border: 1px solid var(--copper-dim);
+      padding: 0.45rem 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--copper-faint);
+      border-color: var(--copper);
+    }
+
+    /* ── HERO ───────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 3rem 5rem;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 7vw, 6.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.35s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--copper-light);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--cream-dim);
+      max-width: 600px;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.5s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.65s forwards;
+    }
+
+    .btn-primary {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--copper);
+      text-decoration: none;
+      padding: 0.85rem 2rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--copper-light); }
+
+    .btn-ghost {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      text-decoration: none;
+      padding: 0.85rem 2rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--copper-dim);
+      color: var(--cream);
+    }
+
+    /* Hero decorative element */
+    .hero-deco {
+      position: absolute;
+      right: -2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 380px;
+      height: 380px;
+      opacity: 0;
+      animation: fadeIn 1.2s ease 0.8s forwards;
+    }
+
+    .hero-deco svg { width: 100%; height: 100%; }
+
+    /* Copper left rule */
+    #hero::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, transparent, var(--copper), transparent);
+    }
+
+    /* ── SECTION BASE ───────────────────────────────────────── */
+    section {
+      position: relative;
+      padding: 7rem 3rem;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--copper);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--copper-light);
+    }
+
+    .section-body {
+      font-size: 1rem;
+      color: var(--cream-dim);
+      max-width: 640px;
+      line-height: 1.8;
+    }
+
+    /* ── PROBLEM SECTION ────────────────────────────────────── */
+    #problem {
+      background: var(--deep);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      margin-top: 4rem;
+      background: rgba(196,98,45,0.15);
+    }
+
+    .problem-card {
+      background: var(--deep);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .problem-card:hover { background: var(--dark-brown); }
+
+    .problem-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      margin-bottom: 1rem;
+    }
+
+    .problem-card-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .problem-card p {
+      font-size: 0.9rem;
+      color: var(--cream-muted);
+      line-height: 1.7;
+    }
+
+    .problem-card.highlighted {
+      background: var(--copper-faint);
+      border-left: 2px solid var(--copper);
+    }
+
+    .problem-card.highlighted .problem-card-title { color: var(--copper-light); }
+    .problem-card.highlighted .problem-card-label { color: var(--copper); }
+
+    .paradox-bar {
+      margin-top: 1px;
+      background: var(--mid-brown);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .paradox-bar span {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--parchment);
+      line-height: 1.6;
+    }
+
+    .paradox-bar::before {
+      content: '//';
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--copper);
+      flex-shrink: 0;
+    }
+
+    /* ── PLATFORM SECTION ───────────────────────────────────── */
+    #platform {
+      background: var(--black);
+    }
+
+    .platform-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+
+    .platform-copy .section-body {
+      margin-bottom: 2rem;
+    }
+
+    .platform-tagline {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--copper-light);
+      border-left: 2px solid var(--copper);
+      padding-left: 1.2rem;
+      margin-top: 2rem;
+      line-height: 1.5;
+    }
+
+    /* Layer Stack */
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .layer {
+      position: relative;
+      padding: 1rem 1.4rem;
+      border: 1px solid rgba(196,98,45,0.18);
+      border-bottom: none;
+      background: var(--deep);
+      cursor: default;
+      transition: all 0.25s;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .layer:last-child { border-bottom: 1px solid rgba(196,98,45,0.18); }
+
+    .layer:hover {
+      background: var(--dark-brown);
+      border-color: rgba(196,98,45,0.4);
+      z-index: 1;
+    }
+
+    .layer-num {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--copper);
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+      min-width: 42px;
+    }
+
+    .layer-content {}
+
+    .layer-name {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--cream);
+      margin-bottom: 0.2rem;
+      letter-spacing: 0.03em;
+    }
+
+    .layer-desc {
+      font-size: 0.78rem;
+      color: var(--cream-muted);
+      line-height: 1.5;
+    }
+
+    .layer.focus {
+      background: var(--copper-faint);
+      border-color: var(--copper);
+      border-width: 1.5px;
+    }
+
+    .layer.focus .layer-name { color: var(--copper-light); }
+    .layer.focus .layer-num { color: var(--copper-light); }
+
+    .layer.intake {
+      background: rgba(255,255,255,0.02);
+      opacity: 0.6;
+    }
+
+    .layer.intake .layer-name { color: var(--cream-muted); }
+
+    .layer-stack-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--copper-dim);
+      margin-bottom: 0.8rem;
+    }
+
+    /* ── SERVICES SECTION ───────────────────────────────────── */
+    #services {
+      background: var(--dark-brown);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 4rem;
+      background: rgba(196,98,45,0.15);
+    }
+
+    .service-card {
+      background: var(--dark-brown);
+      padding: 3rem 2.5rem;
+      transition: background 0.3s;
+    }
+
+    .service-card:hover { background: var(--mid-brown); }
+
+    .service-icon {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      color: var(--copper);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .service-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .service-body {
+      font-size: 0.92rem;
+      color: var(--cream-muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .service-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .service-list li {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--cream-muted);
+      letter-spacing: 0.05em;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .service-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--copper);
+    }
+
+    /* ── ABOUT SECTION ──────────────────────────────────────── */
+    #about {
+      background: var(--black);
+    }
+
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 6rem;
+      align-items: center;
+      margin-top: 4rem;
+    }
+
+    .about-copy .section-body { margin-bottom: 1.5rem; }
+
+    .about-credentials {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 2.5rem;
+      border: 1px solid rgba(196,98,45,0.18);
+    }
+
+    .cred {
+      padding: 1.1rem 1.4rem;
+      background: var(--deep);
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .cred-marker {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--copper);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .cred-text strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--cream);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+    }
+
+    .cred-text span {
+      font-size: 0.82rem;
+      color: var(--cream-muted);
+    }
+
+    .about-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .about-quote {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 1.4;
+      border-left: 2px solid var(--copper);
+      padding-left: 1.5rem;
+    }
+
+    .about-name {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      padding-left: 1.5rem;
+    }
+
+    /* ── CONTACT SECTION ────────────────────────────────────── */
+    #contact {
+      background: var(--deep);
+      text-align: center;
+      padding: 8rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #contact .grid-bg { opacity: 0.5; }
+
+    .contact-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .contact-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-title em {
+      font-style: italic;
+      color: var(--copper-light);
+    }
+
+    .contact-body {
+      font-size: 1rem;
+      color: var(--cream-dim);
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+
+    .contact-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      color: var(--copper);
+      text-decoration: none;
+      border: 1px solid var(--copper-dim);
+      padding: 1rem 2.2rem;
+      transition: all 0.25s;
+    }
+
+    .contact-email:hover {
+      background: var(--copper-faint);
+      border-color: var(--copper);
+      color: var(--cream);
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(196,98,45,0.15);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    footer img { height: 20px; width: auto; opacity: 0.7; }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--cream-muted);
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 1.5rem; }
+      #hero { padding: 7rem 1.5rem 4rem; }
+      .problem-grid { grid-template-columns: 1fr; }
+      .platform-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-deco { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#hero">
+      <img src="ontologie-logo.png" alt="Ontologie Labs" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="#problem">The Shift</a></li>
+      <li><a href="#platform">Platform</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#thinking">Thinking</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <a class="nav-cta" href="mailto:srig@ontologielabs.com">Get in touch</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="grid-bg"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Structured Intelligence</p>
+      <h1 class="hero-title">
+        Making inventory<br/>
+        <em>legible</em> to agents.
+      </h1>
+      <p class="hero-sub">
+        Ontologie Labs is developing structured intelligence for the agentic commerce era — research and tooling that helps merchants become discoverable, comparable, and trustworthy to the AI agents mediating the next generation of commerce.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="mailto:srig@ontologielabs.com">Get in touch</a>
+        <a class="btn-ghost" href="#platform">How it works</a>
+      </div>
+    </div>
+
+    <!-- Symbol mark as hero visual -->
+    <div class="hero-deco">
+      <img src="ontologie-symbol.png" alt="" style="width:100%;height:100%;object-fit:contain;opacity:0.18;" />
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">The Shift</p>
+        <h2 class="section-title">Agents are becoming<br/><em>the entire storefront.</em></h2>
+        <p class="section-body">
+          Every retail era creates a shift in how buyers discover and evaluate products. We are entering the third era — where AI agents mediate discovery, recommendation, and transaction on behalf of consumers.
+        </p>
+      </div>
+
+      <div class="problem-grid reveal" style="transition-delay:0.15s">
+        <div class="problem-card">
+          <p class="problem-card-label">Era 01 — Physical Space</p>
+          <h3 class="problem-card-title">Brick-and-mortar</h3>
+          <p>Shelf placement, layout, and in-person assistance guided discovery. Retailers controlled every touchpoint.</p>
+        </div>
+        <div class="problem-card">
+          <p class="problem-card-label">Era 02 — Digital Screens</p>
+          <h3 class="problem-card-title">E-commerce</h3>
+          <p>Search relevance, reviews, and conversion funnels replaced the shop floor. Merchants invested in SEO and digital merchandising.</p>
+        </div>
+        <div class="problem-card highlighted">
+          <p class="problem-card-label">Era 03 — The New Frontier</p>
+          <h3 class="problem-card-title">Agent-mediated</h3>
+          <p>Agents dominate discovery and recommendation, treating merchants as endpoints. Retailers lose direct control of the discovery layer.</p>
+        </div>
+      </div>
+
+      <div class="paradox-bar reveal" style="transition-delay:0.25s">
+        <span>The Paradox: Open access risks UX control. Blocking access risks losing demand from the agent-driven market. The only durable strategy is making your inventory <em>legible</em> to agents.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORM -->
+  <section id="platform">
+    <div class="section-inner">
+      <div class="platform-layout">
+        <div class="platform-copy reveal">
+          <p class="section-label">The Approach</p>
+          <h2 class="section-title">Progressive<br/><em>Enrichment</em></h2>
+          <p class="section-body">
+            We are developing AI models to extract layers of structured semantic metadata from inventory data — creating rich, machine-legible representations that agents can reason over with confidence.
+          </p>
+          <p class="section-body">
+            Inventory today is built for human eyes: visual merchandising, buried constraints, and implicit meaning. For agents to discover, compare, and transact confidently, that inventory needs to become structured, comparable, trustworthy, and explainable. Structured intelligence can enable this whether delivered as a middleware layer, a merchant-side enrichment capability, or directly embedded into commerce workflows.
+          </p>
+          <p class="platform-tagline">
+            "In an agent-mediated world, the retailer's moat shifts from owning discovery to knowing the inventory."
+          </p>
+        </div>
+
+        <div class="reveal" style="transition-delay:0.2s">
+          <p class="layer-stack-label">Progressive Enrichment Framework</p>
+          <div class="layer-stack">
+            <div class="layer focus">
+              <span class="layer-num">Layer 6</span>
+              <div class="layer-content">
+                <p class="layer-name">Agent Card</p>
+                <p class="layer-desc">Summary, key specs, uncertainties, clarifying questions — optimized for agent consumption.</p>
+              </div>
+            </div>
+            <div class="layer focus">
+              <span class="layer-num">Layer 5</span>
+              <div class="layer-content">
+                <p class="layer-name">Context &amp; Compatibility</p>
+                <p class="layer-desc">Room fit, style pairings, occasion, season.</p>
+              </div>
+            </div>
+            <div class="layer focus">
+              <span class="layer-num">Layer 4</span>
+              <div class="layer-content">
+                <p class="layer-name">Trust Signals</p>
+                <p class="layer-desc">Authenticity, condition, return risk, fraud indicators, delivery.</p>
+              </div>
+            </div>
+            <div class="layer focus">
+              <span class="layer-num">Layer 3</span>
+              <div class="layer-content">
+                <p class="layer-name">Aesthetic &amp; Semantic Layer</p>
+                <p class="layer-desc">Style scores, hex colors, finish, pattern, mood tags.</p>
+              </div>
+            </div>
+            <div class="layer focus">
+              <span class="layer-num">Layer 2</span>
+              <div class="layer-content">
+                <p class="layer-name">Category-Specific Entity</p>
+                <p class="layer-desc">Category and entity-specific attributes extracted at depth.</p>
+              </div>
+            </div>
+            <div class="layer focus">
+              <span class="layer-num">Layer 1</span>
+              <div class="layer-content">
+                <p class="layer-name">Universal Product Base</p>
+                <p class="layer-desc">Identity, price, images, embeddings, raw corpus.</p>
+              </div>
+            </div>
+            <div class="layer intake">
+              <span class="layer-num">Layer 0</span>
+              <div class="layer-content">
+                <p class="layer-name">Existing Standards (Intake)</p>
+                <p class="layer-desc">Schema.org, Google Taxonomy, eBay, Etsy, Shopify.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">Services</p>
+        <h2 class="section-title">How we<br/><em>work with you.</em></h2>
+      </div>
+
+      <div class="services-grid reveal" style="transition-delay:0.15s">
+        <div class="service-card">
+          <span class="service-icon">[01]</span>
+          <h3 class="service-title">Intelligence Research &amp; Development</h3>
+          <p class="service-body">
+            We are building the Progressive Enrichment Framework — a layered approach to extracting structured semantic metadata from inventory data. The goal: inventory that agents can discover, reason over, and act on with confidence, whether through a middleware layer or directly within merchant systems.
+          </p>
+          <ul class="service-list">
+            <li>Structured metadata extraction</li>
+            <li>Agent Card generation per SKU</li>
+            <li>Trust signal and condition modeling</li>
+            <li>Semantic embedding pipelines</li>
+            <li>UCP &amp; ACP protocol readiness research</li>
+          </ul>
+        </div>
+
+        <div class="service-card">
+          <span class="service-icon">[02]</span>
+          <h3 class="service-title">Strategic Consulting</h3>
+          <p class="service-body">
+            Navigate the agentic commerce transition with clarity. Drawing on deep experience leading Buyer AI at eBay, we help retailers and platforms assess readiness, define strategy, and prioritize the highest-leverage investments.
+          </p>
+          <ul class="service-list">
+            <li>Agentic commerce readiness assessment</li>
+            <li>Inventory legibility audit</li>
+            <li>Protocol integration strategy (UCP, ACP)</li>
+            <li>Personalization architecture review</li>
+            <li>AI discovery &amp; search advisory</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-inner">
+      <div class="about-layout">
+        <div class="about-copy reveal">
+          <p class="section-label">About</p>
+          <h2 class="section-title">A research-led<br/><em>early-stage venture.</em></h2>
+          <p class="section-body">
+            Ontologie Labs is an early-stage venture exploring the structured intelligence layer that makes inventory computable and legible for the agentic commerce era.
+          </p>
+          <p class="section-body">
+            The work is grounded in first-hand experience with the gap between how merchants describe products and how machines — and now agents — interpret them. We are in active proof-of-concept development and interested in early conversations with merchants, platforms, and investors who are thinking about this transition.
+          </p>
+          <a href="https://nandi.blog/about/" target="_blank" rel="noopener" style="
+            display:inline-flex;
+            align-items:center;
+            gap:0.6rem;
+            font-family:var(--font-mono);
+            font-size:0.7rem;
+            letter-spacing:0.12em;
+            text-transform:uppercase;
+            color:var(--copper);
+            text-decoration:none;
+            border:1px solid var(--copper-dim);
+            padding:0.7rem 1.4rem;
+            margin-top:1rem;
+            transition:all 0.2s;
+          "
+          onmouseover="this.style.background='var(--copper-faint)';this.style.borderColor='var(--copper)'"
+          onmouseout="this.style.background='transparent';this.style.borderColor='var(--copper-dim)'">
+            Founder bio →
+          </a>
+        </div>
+
+        <div class="about-visual reveal" style="transition-delay:0.2s">
+          <p class="about-quote">
+            "The retailer's moat may shift from owning discovery to knowing the inventory."
+          </p>
+          <p class="about-name">Sri-G Madhvanath · Founder CEO, Ontologie Labs</p>
+
+          <div style="margin-top:2.5rem; border:1px solid rgba(196,98,45,0.2); padding:2rem;">
+            <p style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--copper);margin-bottom:1.2rem;">Recent Talk</p>
+            <p style="font-family:var(--font-display);font-size:1.15rem;color:var(--cream);line-height:1.3;margin-bottom:0.5rem;">Retail Discovery: From Storefront to Agent</p>
+            <p style="font-size:0.8rem;color:var(--cream-muted);">Center for Retail Innovation &amp; Strategy Excellence (RISE), UT Dallas — March 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THINKING -->
+  <section id="thinking" style="background:var(--dark-brown);">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">Thinking</p>
+        <h2 class="section-title">Writing on<br/><em>agentic commerce.</em></h2>
+        <p class="section-body" style="margin-bottom:3.5rem;">
+          Published at <a href="https://nandi.blog" target="_blank" rel="noopener" style="color:var(--copper);text-decoration:none;border-bottom:1px solid var(--copper-dim);">nandi.blog</a>
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(196,98,45,0.15);" class="reveal" style="transition-delay:0.15s">
+
+        <a href="https://nandi.blog/2026/02/05/personalization-in-an-agent-mediated-world/" target="_blank" rel="noopener" style="
+          display:block;
+          background:var(--dark-brown);
+          padding:2.5rem;
+          text-decoration:none;
+          transition:background 0.3s;
+        "
+        onmouseover="this.style.background='var(--mid-brown)'"
+        onmouseout="this.style.background='var(--dark-brown)'">
+          <p style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--copper);margin-bottom:1.2rem;">Feb 2026</p>
+          <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--cream);line-height:1.2;margin-bottom:1rem;">Personalization in an Agent-Mediated World</h3>
+          <p style="font-size:0.9rem;color:var(--cream-muted);line-height:1.75;margin-bottom:1.5rem;">
+            When the agent becomes the interface, where does personalization live? On the agent that travels with the user across every site and session — or on the merchant that only knows what happens within its own walls? An exploration of the discontinuity ahead.
+          </p>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;color:var(--copper);">Read → nandi.blog</span>
+        </a>
+
+        <a href="https://nandi.blog/2026/02/26/personalization-in-an-agent-mediated-world-2/" target="_blank" rel="noopener" style="
+          display:block;
+          background:var(--dark-brown);
+          padding:2.5rem;
+          text-decoration:none;
+          transition:background 0.3s;
+        "
+        onmouseover="this.style.background='var(--mid-brown)'"
+        onmouseout="this.style.background='var(--dark-brown)'">
+          <p style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--copper);margin-bottom:1.2rem;">Feb 2026</p>
+          <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--cream);line-height:1.2;margin-bottom:1rem;">The Merchant's New Moat</h3>
+          <p style="font-size:0.9rem;color:var(--cream-muted);line-height:1.75;margin-bottom:1.5rem;">
+            If agents increasingly know the user, what remains as the merchant's competitive advantage? The argument that for merchants sitting on large amounts of unstructured supply-side data, the moat shifts from knowing the user to knowing the inventory.
+          </p>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;color:var(--copper);">Read → nandi.blog</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="grid-bg"></div>
+    <div class="contact-inner reveal">
+      <img src="ontologie-wordmark.png" alt="Ontologie" style="height:36px;width:auto;margin-bottom:2.5rem;opacity:0.85;" />
+      <p class="section-label" style="justify-content:center">Get in touch</p>
+      <h2 class="contact-title">
+        Interested in the<br/><em>agentic shift</em>?
+      </h2>
+      <p class="contact-body">
+        Whether you're a merchant thinking about agentic commerce readiness, a platform exploring protocol strategy, or an investor interested in what we're building — we'd like to hear from you.
+      </p>
+      <a class="contact-email" href="mailto:srig@ontologielabs.com">
+        srig@ontologielabs.com
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <img src="ontologie-logo.png" alt="Ontologie Labs" />
+    <p class="footer-copy">© 2026 Ontologie Labs · Structured Intelligence</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
