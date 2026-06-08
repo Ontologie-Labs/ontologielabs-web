@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -736,6 +738,68 @@
     }
   </style>
 </head>
+
+<!-- ===================== -->
+<!-- LIVE FEED SCRIPT      -->
+<!-- ===================== -->
+<!--
+  Place this <script> block just before </body> in index.html,
+  alongside any other scripts already there.
+
+  Uses the WordPress.com public REST API — no auth required.
+  Fetches the 5 most recent posts, filters out the 4 cornerstone
+  articles already shown above, and renders up to 3 remaining posts.
+-->
+<script>
+(function () {
+  var CORNERSTONE_URLS = [
+    'personalization-in-an-agent-mediated-world-2',
+    'personalization-in-an-agent-mediated-world',
+    'agency-autonomy-and-intelligence-what-makes-an-agent-agentic',
+    'toward-a-more-mature-culture-of-experimentation'
+  ];
+
+  var feed = document.getElementById('thinking-feed');
+  if (!feed) return;
+
+  fetch('https://public-api.wordpress.com/wp/v2/sites/nandi.blog/posts?per_page=8&_fields=id,title,link,date,excerpt,slug,categories')
+    .then(function (r) { return r.json(); })
+    .then(function (posts) {
+      var filtered = posts.filter(function (p) {
+        return !CORNERSTONE_URLS.some(function (slug) {
+          return p.slug.indexOf(slug) !== -1 || p.link.indexOf(slug) !== -1;
+        });
+      }).slice(0, 3);
+
+      if (!filtered.length) {
+        feed.innerHTML = '';
+        return;
+      }
+
+      var html = filtered.map(function (p) {
+        var date = new Date(p.date);
+        var label = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+        var title = p.title.rendered;
+        var excerpt = p.excerpt ? p.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/\[&hellip;\]|\[…\]/g, '…').trim() : '';
+        if (excerpt.length > 160) excerpt = excerpt.slice(0, 157) + '…';
+        return [
+          '<a class="thinking-card thinking-card--feed" href="' + p.link + '" target="_blank" rel="noopener">',
+          '  <span class="thinking-date">' + label + '</span>',
+          '  <h3>' + title + '</h3>',
+          excerpt ? '  <p>' + excerpt + '</p>' : '',
+          '  <span class="thinking-link">Read → nandi.blog</span>',
+          '</a>'
+        ].join('\n');
+      }).join('\n');
+
+      feed.innerHTML = html;
+    })
+    .catch(function () {
+      feed.innerHTML = '';
+    });
+}());
+</script>
+  
 <body>
 
   <!-- NAV -->
@@ -747,7 +811,7 @@
       <li><a href="#problem">The Shift</a></li>
       <li><a href="#platform">Platform</a></li>
       <li><a href="#services">Services</a></li>
-      <li><a href="#thinking">Thinking</a></li>
+      <li><a href="#perspectives">Perspectives</a></li>
       <li><a href="#about">About</a></li>
     </ul>
     <a class="nav-cta" href="mailto:srig@ontologielabs.com">Get in touch</a>
@@ -886,49 +950,382 @@
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- SERVICES -->
-  <section id="services">
-    <div class="section-inner">
-      <div class="reveal">
-        <p class="section-label">Services</p>
-        <h2 class="section-title">How we<br/><em>work with you.</em></h2>
-      </div>
-
-      <div class="services-grid reveal" style="transition-delay:0.15s">
-        <div class="service-card">
-          <span class="service-icon">[01]</span>
-          <h3 class="service-title">Intelligence Research &amp; Development</h3>
-          <p class="service-body">
-            We are building the Progressive Enrichment Framework — a layered approach to extracting structured semantic metadata from inventory data. The goal: inventory that agents can discover, reason over, and act on with confidence, whether through a middleware layer or directly within merchant systems.
-          </p>
-          <ul class="service-list">
-            <li>Structured metadata extraction</li>
-            <li>Agent Card generation per SKU</li>
-            <li>Trust signal and condition modeling</li>
-            <li>Semantic embedding pipelines</li>
-            <li>UCP &amp; ACP protocol readiness research</li>
-          </ul>
-        </div>
-
-        <div class="service-card">
-          <span class="service-icon">[02]</span>
-          <h3 class="service-title">Strategic Consulting</h3>
-          <p class="service-body">
-            Navigate the agentic commerce transition with clarity. Drawing on deep experience leading Buyer AI at eBay, we help retailers and platforms assess readiness, define strategy, and prioritize the highest-leverage investments.
-          </p>
-          <ul class="service-list">
-            <li>Agentic commerce readiness assessment</li>
-            <li>Inventory legibility audit</li>
-            <li>Protocol integration strategy (UCP, ACP)</li>
-            <li>Personalization architecture review</li>
-            <li>AI discovery &amp; search advisory</li>
-          </ul>
-        </div>
-      </div>
+    <div>
+      <p>
+        Our platform research directly informs our consulting practice — particularly
+        <a href="#services">Catalog & search optimization</a> and
+        <a href="#services">Agentic commerce readiness</a>.
+      </p>
     </div>
+
+    
   </section>
+
+  <!--
+  ONTOLOGIE LABS — SERVICES SECTION UPDATE (v3)
+  ================================================
+  Replace the entire <section id="services"> block in index.html with this.
+
+  What changed from v2:
+  - [01] Intelligence R&D removed from services (lives in Platform section)
+  - Two practice areas introduced: Commerce and Enterprise AI
+  - Two new services added: [05] Enterprise process modernization, [06] Data science & AI transformation
+  - Bridge paragraph added linking consulting to PEF research
+  - Global numbering [01]–[06] across both practice areas
+
+  Also update <meta name="description"> to:
+  "Ontologie Labs — structured intelligence for ecommerce and enterprise AI. Consulting on
+  discovery, personalization, seller advertising, catalog optimization, enterprise AI
+  modernization, and data science transformation."
+-->
+
+<section id="services">
+
+  <p class="section-label">Services</p>
+
+  <h2>How we <em>work with you.</em></h2>
+
+  <!-- Bridge paragraph -->
+  <p class="section-intro">
+    Our consulting practice is grounded in the structured intelligence research
+    <a href="#platform">described above</a>. The Progressive Enrichment Framework,
+    Agent Card architecture, and embedding work we are developing inform how we
+    design and evaluate every client engagement — bringing research-level rigour
+    to practical commerce and enterprise problems.
+  </p>
+
+  <!-- ===================== -->
+  <!-- PRACTICE AREA 1: COMMERCE -->
+  <!-- ===================== -->
+
+  <div class="practice-area">
+    <p class="practice-label">Commerce practice</p>
+    <p class="practice-intro">
+      We help ecommerce and retail companies build AI-native systems for discovery,
+      monetization, and catalog quality — and prepare them for the shift to
+      agent-mediated commerce. This work is grounded in direct operating experience
+      designing and running these systems at eBay scale.
+    </p>
+  </div>
+
+  <!-- [01] Discovery & Personalization Optimization -->
+  <div class="service-item">
+    <span class="service-number">[01]</span>
+    <div class="service-content">
+      <h3>Discovery &amp; personalization optimization</h3>
+      <p>
+        Shoppers who find the right product faster convert better and return more often.
+        Most recommendation systems leave that opportunity on the table — optimizing for
+        the wrong signal, ignoring session context, or breaking down on sparse data.
+        We redesign discovery and personalization architecture to be AI-native and
+        continuously improving: session-aware, intent-driven, and built to compound
+        as behavioral data accumulates.
+      </p>
+      <ul>
+        <li>Audit of existing recommendation and search relevance systems</li>
+        <li>Architecture design for retrieval-augmented or embedding-based recommendation</li>
+        <li>Cold-start and sparse-data strategies for new users and new inventory</li>
+        <li>Instrumentation and evaluation framework: baseline, A/B structure, iteration cadence</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> A well-designed personalization system gets
+        measurably better with every interaction. The architecture we design is built
+        for continuous optimization — not a one-time lift that plateaus.
+      </p>
+      <p class="service-target">
+        Particularly relevant for marketplaces, specialty retailers, and D2C brands
+        with catalogs of 10,000+ SKUs.
+      </p>
+      <p class="service-reading">
+        <a href="https://nandi.blog/2026/02/05/personalization-in-an-agent-mediated-world/"
+         target="_blank" rel="noopener">Perspectives → Personalization in an agent-mediated world</a>
+  </p>
+    </div>
+  </div>
+
+  <!-- [02] Seller Advertising Optimization -->
+  <div class="service-item">
+    <span class="service-number">[02]</span>
+    <div class="service-content">
+      <h3>Seller advertising optimization</h3>
+      <p>
+        Ecommerce platforms and marketplaces are sitting on a monetization opportunity
+        their sellers are already asking for: the ability to pay for visibility. But
+        building a seller advertising product that actually works — where promoted results
+        are relevant to buyers, not just purchased — requires the same infrastructure as
+        great organic search: relevance signals, auction mechanics, and attribution
+        sellers can trust.
+      </p>
+      <p>
+        Drawing on direct experience building and operating eBay's promoted listings
+        and ads products, we help platforms design and optimize first-party seller
+        advertising systems from the ground up, or improve the ones they already have.
+      </p>
+      <ul>
+        <li>Assessment of current seller monetization and revenue leakage points</li>
+        <li>Architecture for relevance-aware sponsored product and promoted listing systems</li>
+        <li>Auction design: bid mechanics, ranking integration, and quality scoring</li>
+        <li>Seller experience: campaign creation, budget controls, and performance transparency</li>
+        <li>Attribution and reporting: connecting ad spend to actual sales outcomes</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> Seller advertising compounds. Sellers who succeed
+        with ads invest more in their listings; better listings improve organic results;
+        improved results attract more sellers. When built on relevance, the ad product
+        reinforces the platform rather than degrading it.
+      </p>
+      <p class="service-target">
+        Particularly relevant for marketplaces and ecommerce platforms looking to build
+        or significantly improve a first-party seller advertising product.
+      </p>
+    </div>
+  </div>
+
+  <!-- [03] Catalog & Search Optimization -->
+  <div class="service-item">
+    <span class="service-number">[03]</span>
+    <div class="service-content">
+      <h3>Catalog &amp; search optimization</h3>
+      <p>
+        Every AI system downstream — personalization, search, seller ads — depends on
+        the same foundation: structured, enriched product data. Most failures at the
+        model layer are actually catalog failures: missing attributes, inconsistent
+        taxonomy, no semantic representation of product meaning. We diagnose catalog
+        quality systematically and rebuild the enrichment pipeline, applying the
+        <a href="#platform">Progressive Enrichment Framework</a> to produce a catalog
+        that functions as a precision retrieval engine.
+      </p>
+      <ul>
+        <li>Catalog quality assessment: attribute completeness, taxonomy consistency, embedding readiness</li>
+        <li>Enrichment pipeline design: extraction, normalization, classification, embedding generation</li>
+        <li>Taxonomy rationalization and attribute harmonization across categories</li>
+        <li><a href="#platform">Agent Card</a> generation: structured product representations for AI agent consumption</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> Catalog enrichment is a compounding investment.
+        Every attribute added improves search, recommendations, and seller ads simultaneously.
+        A well-structured catalog is also the prerequisite for agentic commerce readiness —
+        agents reason over structured data, not visual merchandising.
+      </p>
+      <p class="service-target">
+        Particularly relevant for any organization where search, recommendation, or ad
+        performance is underperforming — the root cause is frequently in the catalog,
+        not the model.
+      </p>
+      <p class="service-reading">
+        <a href="https://nandi.blog/2026/02/26/personalization-in-an-agent-mediated-world-2/"
+           target="_blank" rel="noopener">Perspectives →
+        The Merchant's New Moat</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- [04] Agentic Commerce Readiness -->
+  <div class="service-item">
+    <span class="service-number">[04]</span>
+    <div class="service-content">
+      <h3>Agentic commerce readiness</h3>
+      <p>
+        The commerce interface is changing. AI agents are beginning to shop on behalf
+        of consumers — querying structured data, evaluating options algorithmically,
+        and completing transactions without a human browsing a product page. Merchants
+        and retailers who have structured their catalog, pricing, and fulfillment data
+        for agent consumption will have a meaningful advantage in this transition.
+      </p>
+      <p>
+        This service prepares your commerce infrastructure for the agentic era:
+        structured intelligence layers, Answer Engine Optimization for commerce,
+        and <a href="#platform">Agent Card</a> infrastructure that makes your
+        inventory discoverable and transactable by AI systems.
+      </p>
+      <ul>
+        <li>Readiness assessment: current discoverability and transactability by AI agents</li>
+        <li>Structured data layer design: schema, enrichment, and API surface for agent queries</li>
+        <li>Answer Engine Optimization (AEO): positioning products for agent-mediated discovery</li>
+        <li>Agent Card implementation using the Progressive Enrichment Framework (Layers 0–6)</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> This is infrastructure investment ahead of
+        the curve — building structural advantage before agentic commerce becomes a
+        baseline requirement rather than a differentiator.
+      </p>
+      <p class="service-target">
+        Particularly relevant for organizations with a 12–24 month technology horizon
+        thinking about the next commerce transition.
+      </p>
+      <p class="service-reading">
+        <a href="https://nandi.blog/2026/05/04/agency-autonomy-and-intelligence-what-makes-an-agent-agentic/"
+           target="_blank" rel="noopener">Perspectives →
+        Agency, Autonomy, and Intelligence</a>
+      </p>
+    </div>
+  </div>
+
+
+  <!-- ========================= -->
+  <!-- PRACTICE AREA 2: ENTERPRISE AI -->
+  <!-- ========================= -->
+
+  <div class="practice-area">
+    <p class="practice-label">Enterprise AI practice</p>
+    <p class="practice-intro">
+      We help organizations modernize processes and knowledge systems with AI —
+      and help data science and engineering teams make the transition from classical
+      ML to the agentic model era, including the team design and operating practices
+      that transition requires.
+    </p>
+  </div>
+
+  <!-- [05] Enterprise Process Modernization -->
+  <div class="service-item">
+    <span class="service-number">[05]</span>
+    <div class="service-content">
+      <h3>Enterprise process modernization</h3>
+      <p>
+        Most enterprise AI projects fail not because of the technology but because
+        of how the problem is framed: the wrong process targeted, the wrong pattern
+        applied, or a production system no one trusts enough to use. We help
+        organizations identify where AI can genuinely move the needle, select the
+        right architectural approach, and deploy systems that earn adoption —
+        not just proof of concepts that stall.
+      </p>
+      <p>
+        This work draws on a structured methodology: a process audit, pattern
+        matching, rapid POC, trust-first deployment, and a roadmap for expansion
+        that treats each engagement as a foundation rather than a finish line.
+      </p>
+      <ul>
+        <li>Process audit: mapping high-friction, knowledge-intensive workflows and scoring by impact and feasibility</li>
+        <li>Pattern matching: selecting the right AI approach (RAG, classification, extraction, agentic workflow) for each problem</li>
+        <li>Proof of concept development: time-boxed builds with clear evaluation criteria before broader commitment</li>
+        <li>Deployment with trust scaffolding: human-in-the-loop design, explainability, feedback instrumentation</li>
+        <li>Expansion roadmap: turning a successful first deployment into a repeatable organizational capability</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> Each deployment, done well, becomes the
+        reference case and operating template for the next one. We design engagements
+        to leave your team with the capability to continue — not a dependency on
+        continued consulting.
+      </p>
+      <p class="service-target">
+        Relevant across industries. Particularly high-value in knowledge-intensive
+        functions: legal, compliance, customer operations, procurement, and internal
+        knowledge management.
+      </p>
+      <p class="service-reading">
+        <a href="https://nandi.blog/2026/05/18/toward-a-more-mature-culture-of-experimentation/"
+           target="_blank" rel="noopener">Perspectives →
+        Toward a More Mature Culture of Experimentation</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- [06] Data Science & AI Transformation -->
+  <div class="service-item">
+    <span class="service-number">[06]</span>
+    <div class="service-content">
+      <h3>Data science &amp; AI transformation</h3>
+      <p>
+        Many data science organizations are well-equipped for the world of classical ML —
+        tabular data, batch inference, carefully labeled training sets — and underprepared
+        for the world of LLMs, agentic systems, and real-time inference. The gap is not
+        just technical: it involves team structure, evaluation practices, tooling choices,
+        and a different relationship between models and production systems.
+      </p>
+      <p>
+        We help data science and AI leaders assess where their teams and practices stand,
+        define the target state, and chart a practical transition that doesn't require
+        rebuilding from scratch.
+      </p>
+      <ul>
+        <li>Team assessment: current skills, roles, and structure relative to modern AI demands</li>
+        <li>Target state design: team architecture, role definitions, and capability mix for the agentic era</li>
+        <li>Tooling and stack recommendations: evaluation frameworks, orchestration, observability, inference infrastructure</li>
+        <li>Practice modernization: prompt engineering, evaluation design, guardrails, human-in-the-loop patterns, responsible AI governance</li>
+        <li>Transition roadmap: sequenced plan for reskilling, hiring, and tooling adoption</li>
+      </ul>
+      <p class="service-value">
+        <strong>Strategic value:</strong> The organizations that will lead in AI over
+        the next five years are not those with the most models — they are those with
+        the clearest practices for building, evaluating, and improving AI systems at
+        organizational scale. This engagement is about building that operating capability.
+      </p>
+      <p class="service-target">
+        Particularly relevant for VPs of Data Science, Chief Data and AI Officers,
+        and CTOs managing the transition from classical ML to modern AI at team scale.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- =================== -->
+  <!-- ENGAGEMENT MODELS -->
+  <!-- =================== -->
+
+  <div class="engagement-models">
+
+    <h3>How we engage</h3>
+
+    <p>
+      We structure engagements to match the clarity of the problem and the risk
+      tolerance of the organization. Most begin with a Discovery Sprint. Later
+      tiers are designed for depth and ongoing partnership — not one-time deliverables.
+    </p>
+
+    <div class="engagement-grid">
+
+      <div class="engagement-item">
+        <span class="engagement-number">[A]</span>
+        <h4>Discovery sprint</h4>
+        <p class="engagement-meta">2–3 weeks · fixed fee</p>
+        <p>
+          Where can AI move the needle, what will it take, and what should we
+          prioritize? Deliverables: opportunity map, prioritized use case list,
+          and a solution brief for each top candidate.
+        </p>
+      </div>
+
+      <div class="engagement-item">
+        <span class="engagement-number">[B]</span>
+        <h4>Architecture &amp; strategy</h4>
+        <p class="engagement-meta">4–8 weeks · fixed fee</p>
+        <p>
+          From problem clarity to system design. Technical architecture, data
+          readiness assessment, and phased build roadmap. Deliverables:
+          architecture document, gap analysis, vendor recommendations,
+          and implementation roadmap.
+        </p>
+      </div>
+
+      <div class="engagement-item">
+        <span class="engagement-number">[C]</span>
+        <h4>Implementation partnership</h4>
+        <p class="engagement-meta">12–24 weeks · retainer</p>
+        <p>
+          End-to-end design, build, and deployment alongside your engineering
+          team. Includes evaluation instrumentation, iteration cycles, and
+          knowledge transfer so your team owns what we build together.
+        </p>
+      </div>
+
+      <div class="engagement-item">
+        <span class="engagement-number">[D]</span>
+        <h4>Ongoing optimization advisory</h4>
+        <p class="engagement-meta">Monthly · retainer</p>
+        <p>
+          Sustained external perspective after the build: measurement review,
+          model iteration guidance, and strategic input as your business and
+          technology evolve. Defined scope — not open-ended billing.
+        </p>
+      </div>
+
+    </div><!-- /engagement-grid -->
+
+  </div><!-- /engagement-models -->
+
+</section><!-- /services -->
+
 
   <!-- ABOUT -->
   <section id="about">
@@ -938,8 +1335,11 @@
           <p class="section-label">About</p>
           <h2 class="section-title">A research-led<br/><em>early-stage venture.</em></h2>
           <p class="section-body">
-            Ontologie Labs is an early-stage venture exploring the structured intelligence layer that makes inventory computable and legible for the agentic commerce era.
-          </p>
+               Ontologie Labs is an early-stage venture and consulting practice at the
+              intersection of AI modernization and commerce strategy. We are developing the
+              structured intelligence infrastructure that makes inventory computable and
+              legible for the agentic commerce era — and we work directly with ecommerce,
+              retail, and enterprise organizations building AI-native systems and practices.          </p>
           <p class="section-body">
             The work is grounded in first-hand experience with the gap between how merchants describe products and how machines — and now agents — interpret them. We are in active proof-of-concept development and interested in early conversations with merchants, platforms, and investors who are thinking about this transition.
           </p>
@@ -980,56 +1380,105 @@
     </div>
   </section>
 
-  <!-- THINKING -->
-  <section id="thinking" style="background:var(--dark-brown);">
-    <div class="section-inner">
-      <div class="reveal">
-        <p class="section-label">Thinking</p>
-        <h2 class="section-title">Writing on<br/><em>agentic commerce.</em></h2>
-        <p class="section-body" style="margin-bottom:3.5rem;">
-          Published at <a href="https://nandi.blog" target="_blank" rel="noopener" style="color:var(--copper);text-decoration:none;border-bottom:1px solid var(--copper-dim);">nandi.blog</a>
-        </p>
-      </div>
+  <!--
+  ONTOLOGIE LABS — PERSPECTIVES SECTION UPDATE
+  ==========================================
+  Replace the existing <section id="perspectives"> block in index.html with this.
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(196,98,45,0.15);" class="reveal" style="transition-delay:0.15s">
+  Structure:
+  1. Section header (unchanged)
+  2. Cornerstone articles — 4 curated, static, with editorial notes
+  3. Live feed — fetches latest posts from nandi.blog via WordPress.com API
+  4. Link to full blog
 
-        <a href="https://nandi.blog/2026/02/05/personalization-in-an-agent-mediated-world/" target="_blank" rel="noopener" style="
-          display:block;
-          background:var(--dark-brown);
-          padding:2.5rem;
-          text-decoration:none;
-          transition:background 0.3s;
-        "
-        onmouseover="this.style.background='var(--mid-brown)'"
-        onmouseout="this.style.background='var(--dark-brown)'">
-          <p style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--copper);margin-bottom:1.2rem;">Feb 2026</p>
-          <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--cream);line-height:1.2;margin-bottom:1rem;">Personalization in an Agent-Mediated World</h3>
-          <p style="font-size:0.9rem;color:var(--cream-muted);line-height:1.75;margin-bottom:1.5rem;">
-            When the agent becomes the interface, where does personalization live? On the agent that travels with the user across every site and session — or on the merchant that only knows what happens within its own walls? An exploration of the discontinuity ahead.
-          </p>
-          <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;color:var(--copper);">Read → nandi.blog</span>
-        </a>
+  The live feed uses fetch() on page load — no build step, no backend needed.
+  Works in static HTML on Vercel.
+-->
 
-        <a href="https://nandi.blog/2026/02/26/personalization-in-an-agent-mediated-world-2/" target="_blank" rel="noopener" style="
-          display:block;
-          background:var(--dark-brown);
-          padding:2.5rem;
-          text-decoration:none;
-          transition:background 0.3s;
-        "
-        onmouseover="this.style.background='var(--mid-brown)'"
-        onmouseout="this.style.background='var(--dark-brown)'">
-          <p style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--copper);margin-bottom:1.2rem;">Feb 2026</p>
-          <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--cream);line-height:1.2;margin-bottom:1rem;">The Merchant's New Moat</h3>
-          <p style="font-size:0.9rem;color:var(--cream-muted);line-height:1.75;margin-bottom:1.5rem;">
-            If agents increasingly know the user, what remains as the merchant's competitive advantage? The argument that for merchants sitting on large amounts of unstructured supply-side data, the moat shifts from knowing the user to knowing the inventory.
-          </p>
-          <span style="font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.1em;color:var(--copper);">Read → nandi.blog</span>
-        </a>
+<section id="perspectives">
 
-      </div>
-    </div>
-  </section>
+  <p class="section-label">Perspectives</p>
+
+  <h2>Writing on <em>agentic commerce and AI.</em></h2>
+
+  <p class="section-intro">
+    The ideas behind our work. Published at
+    <a href="https://nandi.blog" target="_blank" rel="noopener">nandi.blog</a>.
+  </p>
+
+  <!-- ===================== -->
+  <!-- CORNERSTONE ARTICLES  -->
+  <!-- ===================== -->
+
+  <p class="thinking-sublabel">Cornerstone perspectives</p>
+
+  <div class="thinking-cornerstone">
+
+    <a class="thinking-card" href="https://nandi.blog/2026/02/26/personalization-in-an-agent-mediated-world-2/" target="_blank" rel="noopener">
+      <span class="thinking-date">Feb 2026</span>
+      <h3>The Merchant's New Moat</h3>
+      <p>
+        If agents increasingly know the user, what remains as the merchant's competitive
+        advantage? The argument that for merchants sitting on large amounts of unstructured
+        supply-side data, the moat shifts from knowing the user to knowing the inventory.
+      </p>
+      <span class="thinking-link">Read → nandi.blog</span>
+    </a>
+
+    <a class="thinking-card" href="https://nandi.blog/2026/02/05/personalization-in-an-agent-mediated-world/" target="_blank" rel="noopener">
+      <span class="thinking-date">Feb 2026</span>
+      <h3>Personalization in an agent-mediated world</h3>
+      <p>
+        When the agent becomes the interface, where does personalization live? On the agent
+        that travels with the user — or on the merchant that only knows what happens within
+        its own walls? An exploration of the discontinuity ahead.
+      </p>
+      <span class="thinking-link">Read → nandi.blog</span>
+    </a>
+
+    <a class="thinking-card" href="https://nandi.blog/2026/05/04/agency-autonomy-and-intelligence-what-makes-an-agent-agentic/" target="_blank" rel="noopener">
+      <span class="thinking-date">May 2026</span>
+      <h3>Agency, Autonomy, and Intelligence: What Makes an Agent Agentic?</h3>
+      <p>
+        A precise look at what distinguishes an AI agent from a model, and why the
+        distinction matters for how we design, evaluate, and govern agentic commerce systems.
+      </p>
+      <span class="thinking-link">Read → nandi.blog</span>
+    </a>
+
+    <a class="thinking-card" href="https://nandi.blog/2026/05/18/toward-a-more-mature-culture-of-experimentation/" target="_blank" rel="noopener">
+      <span class="thinking-date">May 2026</span>
+      <h3>Toward a More Mature Culture of Experimentation</h3>
+      <p>
+        Why A/B testing as commonly practiced fails in discovery and personalization
+        contexts — and what a more rigorous, outcome-oriented approach to experimentation
+        looks like in ecommerce product development.
+      </p>
+      <span class="thinking-link">Read → nandi.blog</span>
+    </a>
+
+  </div><!-- /thinking-cornerstone -->
+
+
+  <!-- ===================== -->
+  <!-- LIVE FEED             -->
+  <!-- ===================== -->
+
+  <p class="thinking-sublabel">Latest from the blog</p>
+
+  <div class="thinking-feed" id="thinking-feed">
+    <!-- Populated by JavaScript below -->
+    <p class="thinking-feed-loading">Loading latest posts…</p>
+  </div>
+
+  <p class="thinking-all">
+    <a href="https://nandi.blog" target="_blank" rel="noopener">All writing → nandi.blog</a>
+  </p>
+
+</section><!-- /thinking -->
+
+
+
 
   <!-- CONTACT -->
   <section id="contact">
@@ -1041,8 +1490,9 @@
         Interested in the<br/><em>agentic shift</em>?
       </h2>
       <p class="contact-body">
-        Whether you're a merchant thinking about agentic commerce readiness, a platform exploring protocol strategy, or an investor interested in what we're building — we'd like to hear from you.
-      </p>
+       Whether you're working on ecommerce discovery, seller monetization, catalog
+      quality, enterprise AI modernization, or building the data science organization
+      you'll need for the next five years — we'd like to hear from you.      </p>
       <a class="contact-email" href="mailto:srig@ontologielabs.com">
         srig@ontologielabs.com
       </a>
